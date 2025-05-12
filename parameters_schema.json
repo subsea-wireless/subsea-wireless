@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "title": "Parameter List",
-    "description": "SWiG parameters",
+    "description": "SWiG parameters ",
     "type": "array",
     "items": {
         "title": "parameter",
