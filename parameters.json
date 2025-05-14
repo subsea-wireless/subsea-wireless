@@ -9,7 +9,7 @@
     {
       "id": 2,
       "name": "swig_version_major",
-      "description": "SWIG Version Major",
+      "description": "SWIG Version major",
       "representation": "uint8"
     },
     {
