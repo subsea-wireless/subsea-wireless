@@ -2,7 +2,7 @@
   "all": [
     {
       "id": 1,
-      "name": "manufacturer_name",
+      "name": "manufacturer_name ",
       "description": "Manufacturer name",
       "representation": "utf-8 string"
     },
