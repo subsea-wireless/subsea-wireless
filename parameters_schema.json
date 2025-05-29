@@ -39,6 +39,8 @@
                     "utf-8 string",
                     "bytearray",
                     "boolean",
+                    "acousticspec",
+                    "hdcscheduletype",
                     "json"
                 ]
             },
@@ -50,119 +52,164 @@
                 "description": "Maximum integer value",
                 "type": "integer"
             },
-            "pattern": {
-                "description": "Regular expression pattern which parameter values must match",
-                "type": "string"
-            },
-            "access": {
-                "description": "Permitted access to the parameter",
-                "type": "object",
-                "properties": {
-                    "dry": {
-                        "type": "object",
-                        "properties": {
-                            "read": {
-                                "type": "boolean"
-                            },
-                            "read_option": {
-                                "type": "boolean"
-                            },
-                            "read_auth": {
-                                "type": "boolean"
-                            },
-                            "write": {
-                                "type": "boolean"
-                            },
-                            "write_option": {
-                                "type": "boolean"
-                            },
-                            "write_auth": {
-                                "type": "boolean"
-                            }
-                        },
-                        "additionalProperties": false,
-                        "dependentRequired": {
-                            "read_option":["read"],
-                            "write_option":["write"],
-                            "read_auth":["read"],
-                            "write_auth":["write"]
-                        }
-                    },
-                    "wet": {
-                        "type": "object",
-                        "properties": {
-                            "read": {
-                                "type": "boolean"
-                            },
-                            "read_option": {
-                                "type": "boolean"
-                            },
-                            "read_auth": {
-                                "type": "boolean"
-                            },
-                            "write": {
-                                "type": "boolean"
-                            },
-                            "write_option": {
-                                "type": "boolean"
-                            },
-                            "write_auth": {
-                                "type": "boolean"
-                            }
-                        },
-                        "additionalProperties": false,
-                        "dependentRequired": {
-                            "read_option":["read"],
-                            "write_option":["write"],
-                            "read_auth":["read"],
-                            "write_auth":["write"]
-                        }
-                    }
-                },
-                "additionalProperties": false
-            },
-            "valid integers": {
-                "description": "Valid integers",
-                "type": "array",
-                "items": {
-                    "type": "integer"
-                },
-                "minItems": 1,
-                "uniqueItems": true
-            },
-            "valid strings": {
-                "description": "Valid strings",
-                "type": "array",
-                "items": {
-                    "type": "string"
-                },
-                "minItems": 1,
-                "uniqueItems": true
-            },
-            "optional": {
-                "description": "Technology optional",
-                "type": "object",
-                "properties": {
-                    "acoustic": {
-                        "type": "boolean"
-                    },
-                    "optical": {
-                        "type": "boolean"
-                    },
-                    "inductive": {
-                        "type": "boolean"
-                    },
-                    "radio": {
-                        "type": "boolean"
-                    },
-                    "no_power": {
-                        "type": "boolean"
-                    }
-                },
-                "additionalProperties": false,
-                "minItems": 1,
-                "uniqueItems": true
+          "pattern": {
+            "description": "Regular expression pattern which parameter values must match",
+            "type": "string"
+          },
+          "hdcscheduletype": {
+            "description": "atomic type used for scheduling ",
+            "type": "object:",
+            "properties": {
+              "timeofthisobject": {
+                "type": "localtimetype"
+              },
+              "timetostartconfiguration": {
+                "type": "localtimetype"
+              },
+              "durationofconfigurationinseconds": {
+                "type": "uint16"
+              },
+              "smacconfiguration": {
+                "type": "acousticspec"
+              },
+              "hdcconfiguration": {
+                "type":  "acousticspec"
+              }
             }
+          },
+          "localtimetype": {
+            "description": "local time in seconds re 000000",
+            "type": "object",
+            "properties": {
+              "timesince000000": {
+                "type" :  "uint32"
+              }
+            }
+          },
+          "acousticspec": {
+            "description": "Descriptor of acoustic modem waveform",
+            "type": "object",
+            "properties": {
+              "waveformcodenumber": {
+                "type": "uint16"
+              },
+              "centerfrequencynumber": {
+                "type": "uint16"
+              },
+              "bitratenumber": {
+                "type":  "uint16"
+              }
+            }
+          },
+          "access": {
+              "description": "Permitted access to the parameter",
+              "type": "object",
+              "properties": {
+                  "dry": {
+                      "type": "object",
+                      "properties": {
+                          "read": {
+                              "type": "boolean"
+                          },
+                          "read_option": {
+                              "type": "boolean"
+                          },
+                          "read_auth": {
+                              "type": "boolean"
+                          },
+                          "write": {
+                              "type": "boolean"
+                          },
+                          "write_option": {
+                              "type": "boolean"
+                          },
+                          "write_auth": {
+                              "type": "boolean"
+                          }
+                      },
+                      "additionalProperties": false,
+                      "dependentRequired": {
+                          "read_option":["read"],
+                          "write_option":["write"],
+                          "read_auth":["read"],
+                          "write_auth":["write"]
+                      }
+                  },
+                  "wet": {
+                      "type": "object",
+                      "properties": {
+                          "read": {
+                              "type": "boolean"
+                          },
+                          "read_option": {
+                              "type": "boolean"
+                          },
+                          "read_auth": {
+                              "type": "boolean"
+                          },
+                          "write": {
+                              "type": "boolean"
+                          },
+                          "write_option": {
+                              "type": "boolean"
+                          },
+                          "write_auth": {
+                              "type": "boolean"
+                          }
+                      },
+                      "additionalProperties": false,
+                      "dependentRequired": {
+                          "read_option":["read"],
+                          "write_option":["write"],
+                          "read_auth":["read"],
+                          "write_auth":["write"]
+                      }
+                  }
+              },
+              "additionalProperties": false
+          },
+          "valid integers": {
+              "description": "Valid integers",
+              "type": "array",
+              "items": {
+                  "type": "integer"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+          },
+          "valid strings": {
+              "description": "Valid strings",
+              "type": "array",
+              "items": {
+                  "type": "string"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+          },
+          "optional": {
+              "description": "Technology optional",
+              "type": "object",
+              "properties": {
+                  "acoustic": {
+                      "type": "boolean"
+                  },
+                  "optical": {
+                      "type": "boolean"
+                  },
+                  "inductive": {
+                      "type": "boolean"
+                  },
+                  "radio": {
+                      "type": "boolean"
+                  },
+                  "no_power": {
+                      "type": "boolean"
+                  }
+              },
+              "additionalProperties": false,
+              "minItems": 1,
+              "uniqueItems": true
+          }
         },
         "required": [ "id", "name", "description", "representation" ]
     },

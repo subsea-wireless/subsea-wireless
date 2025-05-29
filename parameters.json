@@ -1707,6 +1707,42 @@
         }
       },
       "representation": "json"
+    },
+    {
+      "id": 141,
+      "name": "schedule_hdc",
+      "description": "Schedule temporary FDMA sharing of SWiGacoustic L3",
+      "access": {
+        "dry": {
+          "read": true,
+          "write": true,
+          "write_auth": true
+        },
+        "wet": {
+          "read": true,
+          "write": true,
+          "write_auth": true
+        }
+      },
+      "representation": "hdcscheduletype"
+    },
+    {
+      "id": 142,
+      "name": "set_acoustic_waveform",
+      "description": "set acoustic waveform for SWiGacoustic L3 including type frequency and bit rate",
+      "access": {
+        "dry": {
+          "read": true,
+          "write": true,
+          "write_auth": true
+        },
+        "wet": {
+          "read": true,
+          "write": true,
+          "write_auth": true
+        }
+      },
+      "representation": "acousticspec"
     }
   ]
 }
