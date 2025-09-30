@@ -767,7 +767,7 @@
           "read": true
         },
         "wet": {
-          "read": true,
+          "read": true
         }
       },
       "representation": "uint8"
@@ -879,11 +879,11 @@
       "access": {
         "dry": {
           "read": true,
-          "read_option": true,
+          "read_option": true
         },
         "wet": {
           "read": true,
-          "read_option": true,
+          "read_option": true
         }
       }
     },
@@ -1743,16 +1743,16 @@
           "read": false,
           "write": false,
           "write_auth": true
-        },
-        "representation": "uint16"
-      }
+        }
+      },
+      "representation": "uint16"
     },
     {
-      "id": 129,
+      "id": 141,
       "name": "comms_configuration_set",
       "description": "A linked parameter list that defines a waveform code, bandwidth code and center frequency code - the integer parameter is a modem numnber for a node",
       "representation": "uint16",
-      "link_id": {
+      "link_param": {
         "dry": {
           "write": [ "comms_waveform_ID_number", "comms_bandwidth_code", "comms_center_frequency_code" ],
           "read": [ "comms_waveform_ID_number", "comms_bandwidth_code", "comms_center_frequency_code" ]
