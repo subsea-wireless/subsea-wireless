@@ -1750,7 +1750,7 @@
     {
       "id": 141,
       "name": "comms_configuration_set",
-      "description": "A linked parameter list that defines a waveform code, bandwidth code and center frequency code - the integer parameter is a modem numnber for a node",
+      "description": "A linked parameter list that defines a waveform code, bandwidth code and center frequency code - the integer parameter is a modem number for a node",
       "representation": "uint16",
       "link_param": {
         "dry": {
