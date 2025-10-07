@@ -33,8 +33,19 @@
     {
       "id": 3,
       "name": "device_type",
-      "description": "Device Type",
-      "representation": "uint8"
+      "description": "Numeric device category: 0=Optical, 1=Acoustic, 2=Inductive_Tx, 3=Inductive_Rx.",
+      "representation": "uint8",
+      "minimum": 0,
+      "maximum": 3,
+      "valid integers": [0, 1, 2, 3],
+      "access": {
+        "dry": {
+          "read": true
+        },
+        "wet": {
+          "read": true
+        }
+      }
     },
     {
       "id": 4,
