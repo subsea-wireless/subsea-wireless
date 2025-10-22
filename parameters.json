@@ -778,7 +778,7 @@
           "read": true
         },
         "wet": {
-          "read": true,
+          "read": true
         }
       },
       "representation": "uint8"
@@ -890,11 +890,11 @@
       "access": {
         "dry": {
           "read": true,
-          "read_option": true,
+          "read_option": true
         },
         "wet": {
           "read": true,
-          "read_option": true,
+          "read_option": true
         }
       }
     },
@@ -1718,6 +1718,64 @@
         }
       },
       "representation": "json"
+    },
+    {
+      "id": 126,
+      "name": "comms_waveform_ID_number",
+      "description": "Identifies what waveform is to be used for communication",
+      "access": {
+        "dry": {
+          "read": false,
+          "write": false,
+          "write_auth": true
+        }
+      },
+      "representation": "uint16"
+    },
+    {
+      "id": 127,
+      "name": "comms_bandwidth_code",
+      "description": "An integer code that identifies the bandwidth of the waveform to be used",
+      "access": {
+        "dry": {
+          "read": false,
+          "write": false,
+          "write_auth": true
+        }
+      },
+      "representation": "uint16"
+    },
+    {
+      "id": 128,
+      "name": "comms_center_frequency_code",
+      "description": "An integer code that identifies the center frequency of the waveform to be used",
+      "access": {
+        "dry": {
+          "read": false,
+          "write": false,
+          "write_auth": true
+        }
+      },
+      "representation": "uint16"
+    },
+    {
+      "id": 141,
+      "name": "comms_configuration_set",
+      "description": "A linked parameter list that defines a waveform code, bandwidth code and center frequency code - the integer parameter is a modem number for a node",
+      "representation": "uint16",
+      "link_param": {
+        "dry": {
+          "write": [ "comms_waveform_ID_number", "comms_bandwidth_code", "comms_center_frequency_code" ],
+          "read": [ "comms_waveform_ID_number", "comms_bandwidth_code", "comms_center_frequency_code" ]
+        }
+      },
+      "access": {
+        "dry": {
+          "read": true,
+          "write": true,
+          "write_auth": true
+        }
+      }
     }
   ]
 }
