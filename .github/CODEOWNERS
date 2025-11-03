@@ -2,7 +2,7 @@
 # Alphabetical ordered by member companies
 # Set up minimum number of approvers in Settings ... Branches ... Branch Protection Rules
 
-parameter*.json @nigelorr-imenco @JanSWiG @KimTommyUnplg @njudell @okebkal @paul-randall-sonardyne @fschill @spacciniwsense
+parameter*.json @nigelorr-imenco @JanSWiG @KimTommyUnplg @njudell @okebkal @paul-randall-sonardyne @fschill @cbwsense
 
 # parameter*.json @njudell # Aker/BP
 # parameter*.json @KimTommyUnplg # BlueLogic / Unplugged
@@ -11,4 +11,4 @@ parameter*.json @nigelorr-imenco @JanSWiG @KimTommyUnplg @njudell @okebkal @paul
 # parameter*.json @fschill # Hydromea
 # parameter*.json @nigelorr-imenco # Imenco
 # parameter*.json @paul-randall-sonardyne # Sonardyne
-# parameter*.json @spacciniwsense # Wsense
+# parameter*.json @cbwsense # Wsense
