@@ -12,7 +12,7 @@
           "description": "unique identifier",
           "type": "integer",
           "minimum": 1,
-          "maximum": 32767
+          "maximum": 255
         },
         "name": {
           "description": "A machine-useable description of the parameter with no whitespace",
@@ -39,8 +39,7 @@
             "utf-8 string",
             "bytearray",
             "boolean",
-            "json",
-            "null"
+            "json"
           ]
         },
         "minimum": {
