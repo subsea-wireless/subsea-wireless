@@ -1,3 +1,6 @@
 python/__pycache__/
-csv_to_json/compare.csv
-csv_to_json/parameters.json
+# if parameters.csv is included here it can't be auto-updated in the workflow script, so removed
+#  parameters.csv
+
+# Test files
+delete_*
