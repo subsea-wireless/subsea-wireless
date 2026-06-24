@@ -18,6 +18,21 @@ def append_crc16(data: bytes) -> bytes:
     return data + crc.to_bytes(2, "big")
 
 
+def crc_test(data: bytes):
+    crc = crc16_ccitt(data)
+    print(f"CRC16-CCITT for {data} is {crc:#06x}")
+    data_with_crc = append_crc16(data)
+    print(f"Data with CRC: {data_with_crc}")
+    # Verify the CRC
+    received_data = data_with_crc[:-2]
+    received_crc = int.from_bytes(data_with_crc[-2:], "big")
+    calculated_crc = crc16_ccitt(received_data)
+    if received_crc == calculated_crc:
+        print("CRC verification successful.")
+    else:
+        print("CRC verification failed.")
+
+
 def request(code, payload, mid):
     """ Send a GET request, payload is a SWiG COBS Protobuf message"""
     request = aiocoap.Message(code=code, payload=payload)
@@ -115,11 +130,14 @@ def run_POST_test():
 
 
 def main():
-    print("SWiG CoAP message flow with aiocoap")
+    # print ("CRC16-CCITT test")
+    # crc_test(str.encode("CRC Test Packet"))
 
+    print("SWiG CoAP message flow with aiocoap")
     run_GET_test()  # Used to get a parameter or status value
     run_POST_test() # Set a parameter value
 
 
 if __name__ == "__main__":
     main()
+    
