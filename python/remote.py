@@ -22,12 +22,14 @@ while True:
             data, addr = udp_in.recvfrom(1024) # buffer size is 1024 bytes
         except socket.error:    # Presume timeout
             pass        
-    elif INTERFACES[my_name][0] == "serial":
-        print("Serial not supported yet")
+    # elif INTERFACES[my_name][0] == "serial":
+    else:
+        print(f"{INTERFACES[my_name][0]} not supported yet for {my_name}")
+
     if data:
         # print(f"Received: {data}" % data)
         message = params.Message()
-        message.ParseFromString(cobs.decode(data))
+        message.ParseFromString(data)
         # print(str(message))
         if message.target == my_id:
             print(f"Message for me: device {message.target} ({PORTS[message.target]})")

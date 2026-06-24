@@ -8,6 +8,8 @@ wet_interface_name = "rov_wet"
 
 if INTERFACES[dry_interface_name][0] == "udp":
     dry_udp_in = getUdpInput("rov_dry")
+elif INTERFACES[dry_interface_name][0] == "serial_over_udp":
+    dry_udp_in = getUdpInput("rov_dry")
 elif INTERFACES[dry_interface_name][0] == "serial":
     import serial
     dry_serial = serial.Serial(INTERFACES[dry_interface_name][1], INTERFACES[dry_interface_name][2], timeout=0.1)
@@ -35,19 +37,47 @@ while True:
                 pass        
         elif INTERFACES[dry_interface_name][0] == "serial":
             data = dry_serial.read(1000)
+        elif INTERFACES[dry_interface_name][0] == "serial_over_udp":
+            try:
+                data, addr = dry_udp_in.recvfrom(1024) # buffer size is 1024 bytes
+            except socket.error:    # Presume timeout
+                pass
+            if data:
+                try:
+                    # Remove leading and trailing COBS delimiter(s)
+                    while data.startswith(b'\x00'):
+                        data = data[1:]
+                    while data.endswith(b'\x00'):
+                        data = data[:-1]
+                    data = cobs.decode(data)
+                    checksum = data[-2:]
+                    data = data[:-2]
+                    print(f"Received serial over UDP data: {data} with checksum: {checksum}")
+                except Exception as e:
+                    print(f"Error decoding COBS: {e} from received: {data}")
+        else:
+            print(f"{INTERFACES[dry_interface_name][0]} not supported yet for {dry_interface_name}")
     if not data:
-        if INTERFACES[wet_interface_name][0] == "udp":
+        if INTERFACES[wet_interface_name][0] == "udp":  # Network data, raw protobuf message
             try:
                 data, addr = wet_udp_in.recvfrom(1024) # buffer size is 1024 bytes
             except socket.error:    # Presume timeout
                 pass        
-        elif INTERFACES[wet_interface_name][0] == "serial":
+        elif INTERFACES[wet_interface_name][0] == "serial": # COBS and checksum included on serial
             data = wet_serial.read(1000)
+            try:
+                data = cobs.decode(data)
+            except Exception as e:
+                print(f"Error decoding COBS: {e} from received: {data}")
+        else:
+            print(f"{INTERFACES[wet_interface_name][0]} not supported yet for {wet_interface_name}")
 
     if data:
-        # print(f"Received: {data}" % data)
         message = params.Message()
-        message.ParseFromString(cobs.decode(data))
+        try:
+            message.ParseFromString(data)
+        except Exception as e:
+            print(f"Error parsing message: {e} from received: {data}")
         if message.target == my_id:
             print(f"Message for me: device {message.target} ({PORTS[message.target]})")
             # Prepare response
@@ -65,7 +95,7 @@ while True:
                 value = my_status.get(id, None)
                 if spec["representation"] == "uint8" or spec["representation"] == "uint32":
                     parameter.integer = value
-                elif spec["representation"] == "string":
+                elif spec["representation"] == "utf-8 string":
                     parameter.string = value
                 elif spec["representation"] == "boolean":
                     parameter.bool = value

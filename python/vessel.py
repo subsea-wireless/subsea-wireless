@@ -5,6 +5,8 @@ my_name = PORTS[my_id]
 
 if INTERFACES[my_name][0] == "udp":
     udp_in = getUdpInput(PORTS[my_id])
+elif INTERFACES[my_name][0] == "serial_over_udp":
+    udp_in = getUdpInput(PORTS[my_id])
 elif INTERFACES[my_name][0] == "serial":
     import serial
     dry_serial = serial.Serial(INTERFACES[PORTS[my_id]][1], INTERFACES[PORTS[my_id]][2], timeout=0.1)
@@ -38,11 +40,35 @@ for target in [2, 4]:   # Two SWiG wireless devices available, one wired, one re
                 pass        
         elif INTERFACES[my_name][0] == "serial":
             data = dry_serial.read(1000)
+            try:
+                data = cobs.decode(data)
+            except Exception as e:
+                print(f"Error decoding COBS: {e} from received: {data}")
+        elif INTERFACES[my_name][0] == "serial_over_udp":
+            try:
+                data, addr = udp_in.recvfrom(1024) # buffer size is 1024 bytes
+            except socket.error:    # Presume timeout
+                pass        
+            if data:
+                try:
+                    # Remove leading and trailing COBS delimiter(s)
+                    while data.startswith(b'\x00'):
+                        data = data[1:]
+                    while data.endswith(b'\x00'):
+                        data = data[:-1]
+                    data = cobs.decode(data)
+                    checksum = data[-2:]
+                    data = data[:-2]
+                    print(f"Received serial over UDP data: {data} with checksum: {checksum}")
+                except Exception as e:
+                    print(f"Error decoding COBS: {e} from received: {data}")
+        else:
+            print(f"{INTERFACES[my_name][0]} not supported yet for {my_name}")
 
         if data:    # Naively assume "any data is all data" for demo (e.g. not reassembling from fragments etc)
             # print(f"Received: {data}" % data)
             message = params.Message()
-            message.ParseFromString(cobs.decode(data))
+            message.ParseFromString(data)
             waiting = False # Successfully parsed
             if message.target == my_id:
                 print(f"Message for me received from {message.source} ({PORTS[message.source]}) - {len(data)} bytes")
@@ -52,7 +78,7 @@ for target in [2, 4]:   # Two SWiG wireless devices available, one wired, one re
                     # print(response, spec)
                     if spec["representation"] == "uint8" or spec["representation"] == "uint32":
                         device_status[message.source][response.id] = response.integer
-                    elif spec["representation"] == "string":
+                    elif spec["representation"] == "utf-8 string":
                         device_status[message.source][response.id] = response.string
                     elif spec["representation"] == "boolean":
                         device_status[message.source][response.id] = response.bool

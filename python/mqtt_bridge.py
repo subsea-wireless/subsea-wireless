@@ -120,7 +120,7 @@ def mqtt_request_handler(client, userdata, msg):
                     # print(response, spec)
                     if spec["representation"] == "uint8" or spec["representation"] == "uint32":
                         payload = str(response.integer)
-                    elif spec["representation"] == "string":
+                    elif spec["representation"] == "utf-8 string":
                         payload = response.string
                     elif spec["representation"] == "boolean":
                         payload = str(response.bool)
