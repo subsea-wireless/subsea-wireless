@@ -15,11 +15,11 @@ UDP_REMOTE_PORT = 55503
 
 # Fields in INTERFACES definition are:
 # 0 type of interface, one of
-#  "udp" - UDP
-#  "serial" - serial over physical serial port
-#  "serial_over_udp" - serial formatted message sent over UDP for simulation or to UDP serial port server
-# 1 string representation of either IP address (for udp or serial_over_udp), or serial port name for serial
-# 2 number representing UDP port number (for udp or serial_over_udp), or baud rate for serial
+#  "udp" - UDP - as deployed (dry Ethernet interface), or simulating a wireless link (wet wireless interface)
+#  "serial" - serial over physical serial port (dry Serial interface)
+#  "serial_over_udp" - serial formatted message sent over UDP for simulation or to UDP serial port server connected to physical dry Serial interface)
+# 1 string representation of either a) IP address (for udp or serial_over_udp), or b) serial port name for serial
+# 2 number representing either a) UDP port number (for udp or serial_over_udp), or b) baud rate for serial
 INTERFACES = {
     # "vessel":["udp", UDP_IP, UDP_VESSEL_PORT],
     # "vessel":["serial", "COM8", 19200],
@@ -50,48 +50,50 @@ def get_specification(key):
         return spec_by_name[key]
 
 
-def report(proto, description=""):
+def report(protobuf, description=""):
     """ Display debug information about the message"""
-    tx_bytes = proto.SerializeToString()
+    tx_bytes = protobuf.SerializeToString()
     print(f"{description} {str(tx_bytes)} ({len(tx_bytes)} bytes)")
 
 
-def sendMessage(coap_code, proto, portname, port_handle=None):
-    """ Send the message to a specified interface"""
+def sendMessage(coap_code, pb_message, portname, port_handle=None):
+    """ Frame and send the message to the specified interface"""
     time.sleep(WIRELESS_LATENCY)
+    protobuf = pb_message.SerializeToString()
     coap_mid = 0x1234   # TODO, increment on each call, if message needs to be resent, create a new function so a new MID isn't generated?
-    if proto:
+    if protobuf and len(protobuf):    # Not 'None' and not empty string
         coap_mtype = aiocoap.CON
-    else:   # supplied proto is None, ACK only, no payload, replace None with empty string for coap library
+    else:   # supplied protobuf is None, ACK only, no payload, replace None with empty string for coap library
         coap_mtype = aiocoap.ACK
-        proto = ""
+        coap_code = aiocoap.EMPTY   # Force supplied code to empty if no payload
+        protobuf = ""
     if INTERFACES[portname][0] == "udp":
-        # buffer = proto.SerializeToString()
-        buffer = get_udp_message_bytes(coap_code, protobuf = proto, mid = coap_mid, mtype = coap_mtype)
+        # buffer = protobuf.SerializeToString()
+        buffer = get_udp_message_bytes(coap_code, protobuf = protobuf, mid = coap_mid, mtype = coap_mtype)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto(buffer, (INTERFACES[portname][1], INTERFACES[portname][2]))
         print(f"Sent UDP message to {portname} ({INTERFACES[portname][1]}:{INTERFACES[portname][2]}) - {len(buffer)} bytes")
     elif INTERFACES[portname][0] == "serial":
-        # proto_bytes = proto.SerializeToString()
+        # proto_bytes = protobuf.SerializeToString()
         # proto_bytes += bytes([0x43, 0x52])  # CRC placeholder "CR"- TODO implement CRC
         # print("TODO append real CRC to buffer")
         # buffer = bytes([0x00])
         # buffer += cobs.encode(proto_bytes)
         # buffer += bytes([0x00])  # COBS delimiter
-        buffer = get_serial_message_bytes(coap_code, protobuf = proto, mid = coap_mid, mtype = coap_mtype)
+        buffer = get_serial_message_bytes(coap_code, protobuf = protobuf, mid = coap_mid, mtype = coap_mtype)
         port_handle.write(buffer)
         print(f"Sent serial message to {portname} ({INTERFACES[portname][1]}) - {len(buffer)} bytes")
     elif INTERFACES[portname][0] == "serial_over_udp": # Hybrid of UDP and serial (serial format messages, over UDP) for testing or sending to UDP to serial converters
-        # proto_bytes = proto.SerializeToString()
+        # proto_bytes = protobuf.SerializeToString()
         # proto_bytes += bytes([0x43, 0x52])  # CRC placeholder "CR"- TODO implement CRC
         # print("TODO append real CRC to buffer")
         # buffer = bytes([0x00])
         # buffer += cobs.encode(proto_bytes)
         # buffer += bytes([0x00])  # COBS delimiter
-        buffer = get_serial_message_bytes(coap_code, protobuf = proto, mid = coap_mid, mtype = coap_mtype)
+        buffer = get_serial_message_bytes(coap_code, protobuf = protobuf, mid = coap_mid, mtype = coap_mtype)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto(buffer, (INTERFACES[portname][1], INTERFACES[portname][2]))
-        print(f"Sent serial format message over UDP to {portname} ({INTERFACES[portname][1]}:{INTERFACES[portname][2]}) - {len(buffer)} bytes")
+        print(f"Sent serial format message {''.join('{:02X} '.format(x) for x in buffer)} over UDP to {portname} ({INTERFACES[portname][1]}:{INTERFACES[portname][2]}) - {len(buffer)} bytes")
     else:
         print(f"Interface definition not supported for {portname} - {INTERFACES[portname]}")
 

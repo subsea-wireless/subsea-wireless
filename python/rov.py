@@ -42,21 +42,29 @@ while True:
                 data, addr = dry_udp_in.recvfrom(1024) # buffer size is 1024 bytes
             except socket.error:    # Presume timeout
                 pass
-            if data:
-                try:
-                    # Remove leading and trailing COBS delimiter(s)
-                    while data.startswith(b'\x00'):
-                        data = data[1:]
-                    while data.endswith(b'\x00'):
-                        data = data[:-1]
-                    data = cobs.decode(data)
-                    checksum = data[-2:]
-                    data = data[:-2]
-                    print(f"Received serial over UDP data: {data} with checksum: {checksum}")
-                except Exception as e:
-                    print(f"Error decoding COBS: {e} from received: {data}")
+            # if data:
+            #     try:
+            #         # Remove leading and trailing COBS delimiter(s)
+            #         while data.startswith(b'\x00'):
+            #             data = data[1:]
+            #         while data.endswith(b'\x00'):
+            #             data = data[:-1]
+            #         data = cobs.decode(data)
+            #         checksum = data[-2:]
+            #         data = data[:-2]
+            #         print(f"Received serial over UDP data: {data} with checksum: {checksum}")
+            #     except Exception as e:
+            #         print(f"Error decoding COBS: {e} from received: {data}")
         else:
             print(f"{INTERFACES[dry_interface_name][0]} not supported yet for {dry_interface_name}")
+
+        if data:
+            # print (f"received {data:02X}")
+            if INTERFACES[dry_interface_name][0] != "udp":
+                coap_message = coap_message_from_serial_bytes(data)
+            else:
+                coap_message = coap_message_from_udp_bytes(data)
+
     if not data:
         if INTERFACES[wet_interface_name][0] == "udp":  # Network data, raw protobuf message
             try:
@@ -72,12 +80,22 @@ while True:
         else:
             print(f"{INTERFACES[wet_interface_name][0]} not supported yet for {wet_interface_name}")
 
+        if data:
+            if INTERFACES[wet_interface_name][0] != "udp":
+                coap_message = coap_message_from_serial_bytes(data)
+            else:
+                coap_message = coap_message_from_udp_bytes(data)
+
+
     if data:
+        # print(f"Received: {data}" % data)
+        print(f"Received CoAP: {coap_message}")
+
         message = params.Message()
         try:
-            message.ParseFromString(data)
+            message.ParseFromString(coap_message.payload)
         except Exception as e:
-            print(f"Error parsing message: {e} from received: {data}")
+            print(f"Error parsing message: {e} from received payload: {coap_message.payload}")
         if message.target == my_id:
             print(f"Message for me: device {message.target} ({PORTS[message.target]})")
             # Prepare response
@@ -105,18 +123,18 @@ while True:
             # print(str(response))
             # Vessel can only communicate through ROV modem's dry interface
             if INTERFACES[dry_interface_name][0] == "serial":
-                sendMessage(response, "vessel", dry_serial)
+                sendMessage(aiocoap.CONTENT, response, "vessel", dry_serial)
             else:
-                sendMessage(response, "vessel")   
+                sendMessage(aiocoap.CONTENT, response, "vessel")   
         else: # Not for me, pass to target
             print(f"Message to relay to device {message.target} ({PORTS[message.target]})")
             if INTERFACES[PORTS[message.target]][0] == "serial":
                 if message.target == 1: # Dry side
                     # print("Serial dry")
-                    sendMessage(message, PORTS[message.target], dry_serial)
+                    sendMessage(coap_message.code, message, PORTS[message.target], dry_serial)
                 else:
                     # print("Serial wet")
-                    sendMessage(message, PORTS[message.target], wet_serial)
+                    sendMessage(coap_message.code, message, PORTS[message.target], wet_serial)
             else:
                 # print("UDP")
-                sendMessage(message, PORTS[message.target])
+                sendMessage(coap_message.code, message, PORTS[message.target])
