@@ -63,7 +63,7 @@ while True:
                     print(f"No data for requested parameter {request}")
                     pass
             # print(str(response))
-            sendMessage(coap_message.code, response, "rov_wet")    # Wireless interface
+            sendMessage(aiocoap.CONTENT, response, "rov_wet")    # Wireless interface
 
         else: # Not for me, and I'm an endpoint, do nothing
             pass

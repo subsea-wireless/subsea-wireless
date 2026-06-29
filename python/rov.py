@@ -109,7 +109,7 @@ while True:
                 parameter=response.responses.add()
                 parameter.id = id
                 spec = get_specification(id)  # Get the dictionary specification for this ID
-                print(f"Specification for requested{id}:{spec}")
+                # print(f"Specification for requested {id}:{spec}")
                 value = my_status.get(id, None)
                 if spec["representation"] == "uint8" or spec["representation"] == "uint32":
                     parameter.integer = value
