@@ -1,89 +1,15 @@
-import aiocoap
-from cobs import cobs
+from common import *
 
+###### Test functions to demonstrate/test the shared functions and perform typical message flows
 
-def crc16_ccitt(data: bytes, crc: int = 0xFFFF) -> int:
-    """ Calculate the CRC16-CCITT checksum for the given data with CRC specifications:
-        polynomial 0x1021, initial value 0xFFFF, no final XOR, and no reflection.
-        Verified against https://www.codertools.net/tools/crc.php     
-    """
-    poly = 0x1021
-    for byte in data:
-        crc ^= byte << 8
-        for _ in range(8):
-            if crc & 0x8000:
-                crc = ((crc << 1) ^ poly) & 0xFFFF
-            else:
-                crc = (crc << 1) & 0xFFFF
-    return crc
-
-
-def get_udp_message_bytes(code, protobuf, mid, mtype):
-    """ Create a UDP message with the given code, protobuf, and message ID
-        as a CoAP message byte stream, with the provided parameters
-    """
-    message = aiocoap.Message(code=code, payload=protobuf)
-    message.mid = mid
-    message.mtype = mtype
-    return message.encode()
-
-
-def get_serial_message_bytes(code, protobuf, mid, mtype):
-    """ Create a serial message with the given code, protobuf, and message ID
-        by wrapping the base CoAP message with checksum, COBS encoding, and null delimiters
-    """
-    message_bytes = get_udp_message_bytes(code, protobuf, mid, mtype)
-    serial_crc = crc16_ccitt(message_bytes).to_bytes(2, "big")
-    serial_message = bytes([0x00]) + cobs.encode(message_bytes + serial_crc) + bytes([0x00])
-    return serial_message
-
-
-def coap_message_from_udp_bytes(message_bytes):
-    """ Extract the CoAP message from a UDP message"""
-    message = aiocoap.Message.decode(message_bytes)
-    return message
-
-
-def coap_message_from_serial_bytes(serial_message):
-    """ Extract the CoAP message from a serial message
-        removing serial-specific framing and using 
-        coap_message_from_udp_bytes to decode the CoAP message
-    """
-    # Remove any leading and trailing null COBS delimiter(s)
-    while serial_message.startswith(b'\x00') and len(serial_message) > 1:
-        serial_message = serial_message[1:]
-    while serial_message.endswith(b'\x00') and len(serial_message) > 1:
-        serial_message = serial_message[:-1]
-
-    if len(serial_message) > 3: # data + CRC
-        cobs_decoded = cobs.decode(serial_message)
-        message_bytes = cobs_decoded[:-2]  # Remove CRC
-        crc_received = int.from_bytes(cobs_decoded[-2:], "big")
-        crc_calculated = crc16_ccitt(message_bytes)
-        if crc_received == crc_calculated:
-            return coap_message_from_udp_bytes(message_bytes)
-        else:
-            raise ValueError("Serial CRC mismatch")
-    else:
-        raise ValueError("Serial message too short")
-    
-
-###### Test functions to demonstrate/test the above functions and perform typical message flows
-
-
-def crc_test(data: bytes):
+def crc_test(data: bytes, expected):
     crc = crc16_ccitt(data)
     print(f"CRC16-CCITT for {data} is {crc:#06x}")
-    data_with_crc = append_crc16(data)
-    print(f"Data with CRC: {data_with_crc}")
-    # Verify the CRC
-    received_data = data_with_crc[:-2]
-    received_crc = int.from_bytes(data_with_crc[-2:], "big")
-    calculated_crc = crc16_ccitt(received_data)
-    if received_crc == calculated_crc:
-        print("CRC verification successful.")
+    crc = crc16_ccitt(data)
+    if crc == expected:
+        print(f"Calculated CRC 0x{crc:02X} equals provided expected CRC")
     else:
-        print("CRC verification failed.")
+        raise ValueError(f"CRC fail, calculated 0x{crc:02X} expected 0x{expected:02X}")
 
 
 def run_GET_over_serial_test():
@@ -161,7 +87,7 @@ def run_POST_over_UDP_test():
 
 def main():
     # print ("CRC16-CCITT test")
-    # crc_test(str.encode("CRC Test Packet"))
+    # crc_test(str.encode("CRC Test Packet"), 0x5931) # Pass pre-validated expected result from https://www.codertools.net/tools/crc.php (CRC-16/CCITT-FALSE)
 
     print("SWiG CoAP message flow with aiocoap")
     run_GET_over_serial_test()  # Used to get a parameter or status value
