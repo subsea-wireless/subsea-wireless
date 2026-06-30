@@ -7,8 +7,13 @@ import logging
 import random
 import time
 
+<<<<<<<<< Temporary merge branch 1
+# broker = "test.mosquitto.org" # Free broker for demonstration
+broker = "192.168.36.12" # Nigel's local broker
+=========
 broker = "test.mosquitto.org" # Free broker for demonstration
 # broker = "192.168.36.12" # Nigel's local broker
+>>>>>>>>> Temporary merge branch 2
 path = "swig/2026/example/protocol/bridge/" # Prefix for all messages
 port = 1883
 client_id = f'bridge-example-{random.randint(0, 1000)}'
