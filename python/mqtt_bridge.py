@@ -19,8 +19,8 @@ else:
     print(f"Interface definition not supported for {my_name} - {INTERFACES[my_name]}")
 
 
-# broker = "test.mosquitto.org" # Free broker for demonstration
-broker = "192.168.36.12" # Nigel's local broker
+broker = "test.mosquitto.org" # Free broker for demonstration
+# broker = "192.168.36.12" # Nigel's local broker
 
 path = "swig/2026/example/protocol/bridge/" # Prefix for all messages
 port = 1883
