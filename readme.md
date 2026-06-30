@@ -30,6 +30,8 @@ Either vessel or MQTT vessel demos will interrogate each modem (the ROV one and 
 
 If running the MQTT version, an MQTT client such as [MQTT explorer](https://mqtt-explorer.com/) connected to the same broker is useful to view the updated broker state
 
+Currently, the MQTT examples only send to the rov and don't check responses. The latter would be more useful so if anyone would like to add it, please do...
+
 ## Serial support
 To use serial ports for communications, install python serial
 `pip install pyserial` installs python serial port support
