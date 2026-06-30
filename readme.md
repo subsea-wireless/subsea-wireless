@@ -39,6 +39,7 @@ Example implementation of serial and UDP alternatives are commented out in the s
 ## Protobuf
 `pip install protobuf` installs protobuf support for python
 `pip install cobs` installs COBS support, to guarantee buffers only have nulls as terminating bytes for transmission
+`pip install aiocoap` installs CoAP support to handle SWiG Direct message framing
 `pip install paho-mqtt` installs MQTT support for the MQTT bridge demonstration
 `pip show protobuf` confirms version of python protobuf installed 
 

@@ -22,7 +22,7 @@ else:
 broker = "test.mosquitto.org" # Free broker for demonstration
 # broker = "192.168.36.12" # Nigel's local broker
 
-path = "swig/2024/example/protocol/bridge/" # Prefix for all messages
+path = "swig/2026/example/protocol/bridge/" # Prefix for all messages
 port = 1883
 client_id = f'bridge-example-{random.randint(0, 1000)}'
 
@@ -38,7 +38,7 @@ def connect_mqtt():
         else:
             print("Failed to connect, return code %d\n", rc)
     # Set Connecting Client ID
-    client = mqtt_client.Client(client_id)
+    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, client_id)
     # client.username_pw_set(username, password)
     client.on_connect = on_connect
     client.connect(broker, port)
@@ -90,9 +90,9 @@ def mqtt_request_handler(client, userdata, msg):
         # print(request_stats)
     # Vessel can only communicate through ROV modem's dry interface
         if INTERFACES[my_name][0] == "serial":
-            sendMessage(request_stats, "rov_dry", dry_serial)
+            sendMessage(aiocoap.GET, request_stats, "rov_dry", dry_serial)
         else:
-            sendMessage(request_stats, "rov_dry")   
+            sendMessage(aiocoap.GET, request_stats, "rov_dry")   
         waiting = True
     else:
         print(f"Received unhandled topic `{msg.topic}`: `{msg.payload.decode()}`")
