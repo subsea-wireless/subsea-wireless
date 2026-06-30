@@ -7,8 +7,13 @@ import logging
 import random
 import time
 
+<<<<<<< HEAD
 broker = "test.mosquitto.org" # Free broker for demonstration
 # broker = "192.168.36.12" # Nigel's local broker
+=======
+# broker = "test.mosquitto.org" # Free broker for demonstration
+broker = "192.168.36.12" # Nigel's local broker
+>>>>>>> a4286266d7ea7c7bb65c0de16020c5bf5c2a3234
 path = "swig/2026/example/protocol/bridge/" # Prefix for all messages
 port = 1883
 client_id = f'bridge-example-{random.randint(0, 1000)}'
