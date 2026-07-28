@@ -22,12 +22,19 @@ while True:
             data, addr = udp_in.recvfrom(1024) # buffer size is 1024 bytes
         except socket.error:    # Presume timeout
             pass        
-    elif INTERFACES[my_name][0] == "serial":
-        print("Serial not supported yet")
+    # elif INTERFACES[my_name][0] == "serial":
+    else:
+        print(f"{INTERFACES[my_name][0]} not supported yet for {my_name}")
+
     if data:
-        # print(f"Received: {data}" % data)
+        # print (f"received {data:02X}")
+        if INTERFACES[my_name][0] != "udp":
+            coap_message = coap_message_from_serial_bytes(data)
+        else:
+            coap_message = coap_message_from_udp_bytes(data)
+
         message = params.Message()
-        message.ParseFromString(cobs.decode(data))
+        message.ParseFromString(coap_message.payload)
         # print(str(message))
         if message.target == my_id:
             print(f"Message for me: device {message.target} ({PORTS[message.target]})")
@@ -56,7 +63,7 @@ while True:
                     print(f"No data for requested parameter {request}")
                     pass
             # print(str(response))
-            sendMessage(response, "rov_wet")    # Wireless interface
+            sendMessage(aiocoap.CONTENT, response, "rov_wet")    # Wireless interface
 
         else: # Not for me, and I'm an endpoint, do nothing
             pass
