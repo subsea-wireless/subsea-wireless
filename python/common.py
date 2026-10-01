@@ -74,22 +74,10 @@ def sendMessage(coap_code, pb_message, portname, port_handle=None):
         sock.sendto(buffer, (INTERFACES[portname][1], INTERFACES[portname][2]))
         print(f"Sent UDP message to {portname} ({INTERFACES[portname][1]}:{INTERFACES[portname][2]}) - {len(buffer)} bytes")
     elif INTERFACES[portname][0] == "serial":
-        # proto_bytes = protobuf.SerializeToString()
-        # proto_bytes += bytes([0x43, 0x52])  # CRC placeholder "CR"- TODO implement CRC
-        # print("TODO append real CRC to buffer")
-        # buffer = bytes([0x00])
-        # buffer += cobs.encode(proto_bytes)
-        # buffer += bytes([0x00])  # COBS delimiter
         buffer = get_serial_message_bytes(coap_code, protobuf = protobuf, mid = coap_mid, mtype = coap_mtype)
         port_handle.write(buffer)
         print(f"Sent serial message to {portname} ({INTERFACES[portname][1]}) - {len(buffer)} bytes")
     elif INTERFACES[portname][0] == "serial_over_udp": # Hybrid of UDP and serial (serial format messages, over UDP) for testing or sending to UDP to serial converters
-        # proto_bytes = protobuf.SerializeToString()
-        # proto_bytes += bytes([0x43, 0x52])  # CRC placeholder "CR"- TODO implement CRC
-        # print("TODO append real CRC to buffer")
-        # buffer = bytes([0x00])
-        # buffer += cobs.encode(proto_bytes)
-        # buffer += bytes([0x00])  # COBS delimiter
         buffer = get_serial_message_bytes(coap_code, protobuf = protobuf, mid = coap_mid, mtype = coap_mtype)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         sock.sendto(buffer, (INTERFACES[portname][1], INTERFACES[portname][2]))
