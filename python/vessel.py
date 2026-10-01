@@ -40,28 +40,11 @@ for target in [2, 4]:   # Two SWiG wireless devices available, one wired, one re
                 pass        
         elif INTERFACES[my_name][0] == "serial":
             data = dry_serial.read(1000)
-            # try:
-            #     data = cobs.decode(data)
-            # except Exception as e:
-            #     print(f"Error decoding COBS: {e} from received: {data}")
         elif INTERFACES[my_name][0] == "serial_over_udp":
             try:
                 data, addr = udp_in.recvfrom(1024) # buffer size is 1024 bytes
             except socket.error:    # Presume timeout
                 pass        
-            # if data:
-            #     try:
-            #         # Remove leading and trailing COBS delimiter(s)
-            #         while data.startswith(b'\x00'):
-            #             data = data[1:]
-            #         while data.endswith(b'\x00'):
-            #             data = data[:-1]
-            #         data = cobs.decode(data)
-            #         checksum = data[-2:]
-            #         data = data[:-2]
-            #         print(f"Received serial over UDP data: {data} with checksum: {checksum}")
-            #     except Exception as e:
-            #         print(f"Error decoding COBS: {e} from received: {data}")
         else:
             print(f"{INTERFACES[my_name][0]} not supported yet for {my_name}")
 
