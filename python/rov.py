@@ -42,19 +42,6 @@ while True:
                 data, addr = dry_udp_in.recvfrom(1024) # buffer size is 1024 bytes
             except socket.error:    # Presume timeout
                 pass
-            # if data:
-            #     try:
-            #         # Remove leading and trailing COBS delimiter(s)
-            #         while data.startswith(b'\x00'):
-            #             data = data[1:]
-            #         while data.endswith(b'\x00'):
-            #             data = data[:-1]
-            #         data = cobs.decode(data)
-            #         checksum = data[-2:]
-            #         data = data[:-2]
-            #         print(f"Received serial over UDP data: {data} with checksum: {checksum}")
-            #     except Exception as e:
-            #         print(f"Error decoding COBS: {e} from received: {data}")
         else:
             print(f"{INTERFACES[dry_interface_name][0]} not supported yet for {dry_interface_name}")
 
