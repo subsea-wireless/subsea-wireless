@@ -30,6 +30,8 @@ Either vessel or MQTT vessel demos will interrogate each modem (the ROV one and 
 
 If running the MQTT version, an MQTT client such as [MQTT explorer](https://mqtt-explorer.com/) connected to the same broker is useful to view the updated broker state
 
+Currently, the MQTT examples only send to the rov and don't check responses. The latter would be more useful so if anyone would like to add it, please do...
+
 ## Serial support
 To use serial ports for communications, install python serial
 `pip install pyserial` installs python serial port support
@@ -39,6 +41,7 @@ Example implementation of serial and UDP alternatives are commented out in the s
 ## Protobuf
 `pip install protobuf` installs protobuf support for python
 `pip install cobs` installs COBS support, to guarantee buffers only have nulls as terminating bytes for transmission
+`pip install aiocoap` installs CoAP support to handle SWiG Direct message framing
 `pip install paho-mqtt` installs MQTT support for the MQTT bridge demonstration
 `pip show protobuf` confirms version of python protobuf installed 
 
