@@ -22,7 +22,6 @@ while True:
             data, addr = udp_in.recvfrom(1024) # buffer size is 1024 bytes
         except socket.error:    # Presume timeout
             pass        
-    # elif INTERFACES[my_name][0] == "serial":
     else:
         print(f"{INTERFACES[my_name][0]} not supported yet for {my_name}")
 
